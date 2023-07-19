@@ -6,6 +6,7 @@ from vk_api.utils import get_random_id
 from vk_api.keyboard import VkKeyboard, VkKeyboardColor
 
 
+
 # Sending message via bot
 def write_message(send_id: int, message: str, keyboard=None) -> None:
     data = {'peer_id': send_id, 'message': message, 'random_id': get_random_id()}
@@ -21,16 +22,28 @@ def run_api() -> None:
         if event.type == VkBotEventType.MESSAGE_NEW:
             if event.obj.message['text'].lower() == 'Hello'.lower():
                 write_message(event.obj.message['peer_id'], "Hello! Welcome to our group!")
-            elif "База знаний".lower() in event.obj.message['text'].lower():
+            elif "Меню".lower() in event.obj.message['text'].lower():
                 if check_member(event.obj.message['from_id']):
-                    write_message(event.obj.message['peer_id'], "Спасибо, за подписку! Высылаю базу знаний!")
+                    keyboard = VkKeyboard()
+                    buttons = ["Выбрать произведение", "Краткое содержание", "Описание персонажей", "Назад"]
+                    for i, button in enumerate(buttons):
+                        keyboard.add_button(button, VkKeyboardColor.POSITIVE)
+                        if i < 3:
+                            keyboard.add_line()
+
+                    write_message(event.obj.message['peer_id'],
+                                  "Спасибо, за подписку!\nВыберите, что вы хотите сделать", keyboard)
                 else:
                     write_message(event.obj.message['peer_id'],
                                   f"Для использования всех функций подпишитесь на группу!\n{group_url}")
             elif event.obj.message['text'].lower() == 'Start'.lower():
                 keyboard = VkKeyboard()
-                keyboard.add_button("База знаний", VkKeyboardColor.POSITIVE)
+                keyboard.add_button("Меню", VkKeyboardColor.POSITIVE)
                 write_message(event.obj.message['peer_id'], "Рад приветствовать!", keyboard)
+            elif event.obj.message['text'].lower() == 'Назад'.lower():
+                keyboard = VkKeyboard()
+                keyboard.add_button("Меню", VkKeyboardColor.POSITIVE)
+                write_message(event.obj.message['peer_id'], "До новых встреч!", keyboard)
             else:
                 write_message(event.obj.message['peer_id'], "Sorry I don't understand. Write start.")
 

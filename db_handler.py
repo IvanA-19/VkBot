@@ -52,3 +52,10 @@ def remove_member(user_id: int) -> None:
     if cursor.fetchone() is not None:
         cursor.execute(f"DELETE FROM users WHERE id = {user_id}")
         db.commit()
+
+# Show id of users in data base
+def show_db():
+    cursor.execute("SELECT * FROM users")
+    data = cursor.fetchall()
+    return data
+
